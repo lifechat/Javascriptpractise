@@ -46,13 +46,50 @@ var Util = {
         return this.imgObj[name];
     },
     loadImg:function(callback){
-
+          var root = 'images/',
+          count = 0,
+          num = 0;
+          for(var i in this.images){
+              count += this.images[i].length;
+          }
+          for(var j = 0,c;c=arr[j++];){
+              var src = root+root2+'/'+c;
+              var image = new Image;
+              image.onload = function(){
+                  var name  = this.src.split('/');
+                  name = name[name.length-1].split('.')[0];
+                  Util.imgObj[name] = {
+                      obj:this,
+                      width:this.width,
+                      height:this.height
+                  }
+                  num+=1;
+                  div2.innerHTML = num+'/'+count;
+                  if(count === num){
+                      callback && callback();
+                  }
+                  this.onload = null;
+              }
+              image.src = src;
+          }
     },
-    //临时存储
+    //临时存储 
     audioObj:{},
     loadAudio:function(callback){
          var root = 'sound/', //音频根路径
              count = this.audios.length,//文件数量
              num = 0;
+             for(var i=0,c;c=this.audios[i++];){
+                 div2.innerHTML = i+'/'+count;
+                 var audio = new Audio();
+                 audio.addEventListener("canplaythrough",function(){
+                     num+=1;
+                     Util.audioObj[c]= root+c;
+                     if(count === num){
+                         callback && callback();
+                     }
+                 },false);
+                 audio.src = root+c;
+             }
     }
 }
