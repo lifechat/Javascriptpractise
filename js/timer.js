@@ -1,134 +1,135 @@
-/**
- * æ—¶é—´å¤„ç†ç±»
- * @author æ¥®å¢¨å°çµ
- * @time 2020-5-07
-*/
-var Timer  = function(){
-    var t,
-    timers = [],
-    curr,
-    prepareTimer = [],
-    slowTimer =1,
-    index = 0;
 
-    var getSlow = function(){
-        return Config.fps*slowTimer;
-    }
+	var Timer = function(){
 
-    var start = function(){
-        if(t)return;
-        t = setInterval(function(){
-            if(slowTimer !==1){
-                if(index++%slowTimer !==0){
-                    return;
-                }
-            }
-            timers = prepareTimer.concat(timers);
-            prepareTimer.length = 0;
-            for(curr = timers.length-1;curr>=0;curr--){
-                if(timers[curr].state ==='stop'){
-                    continue;
-                }
-                timers[curr]();
-                //if ( timers[ curr ].state === 'stop' ){
+		var t, timers = [], curr, prepareTimer = [], slowTimer = 1, index = 0;
+		
+		var getSlow = function(){
+			return Config.fps * slowTimer;	
+		}
+		
+		var start = function(){
+			if ( t ) return;
+			t = setInterval( function(){
+				if ( slowTimer !== 1 ){
+					if ( index++ % slowTimer !== 0 ){
+						return;
+					}
+				}
+				timers = prepareTimer.concat( timers );
+				prepareTimer.length = 0;
+				for ( curr = timers.length - 1; curr >= 0; curr-- ){
+					if ( timers[ curr ].state === 'stop' ){
+						continue;
+					}
+					timers[ curr ]();
+					//if ( timers[ curr ].state === 'stop' ){
 						//timers[ curr ].state = 'destory';
 						//timers.splice( curr, 1 );
 					//}
-            }
-        },Config.fps*slowTimer);
-    }
-     
-    var clean = function(){
-        for(;curr>=0;curr--){
-            if(timers[curr]() === 'done'){
-                timers.splice(i,1);
-            }
-        }
-    }
+				}
+			
+			}, Config.fps * slowTimer );
+		}
 
-    var push = function(fn){
-        timers[timers.length]=fn;
-        return fn;
-    }
-    
+		var clean = function(){
+			for ( ; curr >= 0; curr-- ){
+				if ( timers[ curr ]() === 'done' ){
+					timers.splice( i, 1 );
+				}
+			}
+		}
 
-    var unshift = function(fn){
-        return prepareTimer.unshift(fn);
-    }
-//æ£€æŸ¥Z-indexå †å é¡ºåº
-    var checkZindex = function(fn){
-        var j,l,oldFn;
-        for(var i=0,c=0;c=timers[i++];){
-            if(c ===fn){
-                j = i-1;
-            }else if(c.zIndex){
-                k = i-1;
-                oldFn = c;
-            }
-        }
-        if(j>k){
-            timers[j] = oldFn;
-            timers[k] = fn;
-        }
-    }
+		var push = function( fn ){
+			timers[ timers.length ] = fn;
+			return fn;
+		}
 
-    var stop = function(){
-        clean();
-        clearInterval(t);
-        t = null;
-    }
+		var unshift = function( fn ){
+			return prepareTimer.unshift( fn );  //±£³ÖÍ¬²½, ²»È»¿ÉÄÜ»á³öÏÖAÌí¼Ó½øÁËtimer£¬ ¶øBÃ»ÓÐ. ºÃ»ùÓÑÓÀÔ¶²»·Ö¿ª.
+		}
+		
+		var checkZindex = function( fn ){
+			var j, k, oldFn;
+			for ( var i = 0, c; c = timers[ i++ ]; ){
+				if ( c === fn ){
+					j =  i - 1;	
+				}else if ( c.zIndex ){
+					k = i - 1;
+					oldFn = c;
+				}
+			}
+			if ( j > k ){
+				timers[ j ] = oldFn;
+				timers[ k ] = fn;	
+			}
+		}
 
-    var empty = function(){
-        timers.length = 0;
-    }
+		var stop = function(){
+			clean();
+			clearInterval( t );
+			t = null;
+		}
 
-    var slow = function(timer){
-        stop();
-        slowTimer = 3;
-        start();
-        setTimeout(function(){
-            stop();
-            slowTimer =1;
-            start();
-        },timer)
-    }
+		var empty = function(){
+			timers.length = 0;
+			//stop();
+		}
+		
+		var slow = function( timer ){
+			stop()
+			slowTimer = 3;
+			start();
+			setTimeout( function(){
+				stop();
+				slowTimer = 1;
+				start();
+			}, timer )
+		}
+		
+		var normal = function(){
+			slowTimer = 1;
+		}
+		
+		
+		
+	var add = function( fn ){
+		
+		fn.state = 'normal';
+	
+		var start = function(){
+			if ( fn.state === 'normal' ){
+				unshift( fn );
+				fn.state = 'add';
+			}
+	
+			else if ( fn.state === 'stop' ){
+				fn.state = 'add';	
+			}
+	
+		}
 
-    var normal = function(){
-        slowTimer = 1;
-    }
+		var stop = function(){
+			fn.state = 'stop';
+		}
+	
+		return {
+			start: start,
+			stop: stop
+		}
+	
+	}
 
-    var add = function(fn)
-    {
-         fn.state = 'normal';
+		return {
+			add: add,
+			start: start,
+			push: push,
+			unshift: unshift,
+			stop: stop,
+			empty: empty,
+			slow: slow,
+			normal: normal,
+			checkZindex: checkZindex
+		}
 
-         var start = function(){
-             if(fn.state === 'normal'){
-                 unshift(fn);
-                 fn.state = 'add';
-             }else if(fn.state === 'stop'){
-                 fn.state = 'add';
-             }
-         }
-         
-         var stop = function(){
-             fn.state = 'add';
-         }
 
-         return {
-             start:start,
-             stop:stop
-         }
-    }
-    return{
-        add:add,
-        start: start,
-        push: push,
-        unshift: unshift,
-        stop: stop,
-        empty: empty,
-        slow: slow,
-        normal: normal,
-        checkZindex: checkZindex
-    }
-
-}();
+	}()

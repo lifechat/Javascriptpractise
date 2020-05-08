@@ -1,23 +1,25 @@
 
 
 var Util = {
-    isArray:function (arr) {
-        return Object.prototype.toString.call(arr) === '[object Array]';  //用来判断传入的参数是否为数组
-    },
-    copy:function(_obj){
-        var obj = {};
-        for(var i in _obj){
-            if(Util.isArray(_obj[i])){
-                obj[i] = _obj[i].slice(0);
-            }else{
-                obj[i] = _obj[i];
-            }
-        }
-        return obj;
-    },
-    //将图片用对象进行存储
-    images:{
-        
+
+	isArray: function( ary ){
+		return Object.prototype.toString.call( ary ) === '[object Array]';
+	},
+	
+	copy: function( _obj ){
+		var obj = {};
+		for ( var i in _obj ){
+			if ( Util.isArray( _obj[i] ) ){
+				obj[ i ] = _obj[ i ].slice( 0 );
+			}else{
+				obj[ i ] = _obj[ i ];	
+			}
+		}
+		return obj;
+	},
+	
+	images: {
+
 		g: [ 'behind.gif', 'fighterShadow.gif', 'front.gif' ],
 		
 		RYU1: [ 'RYU1_wait.gif', 'RYU1_goForward.gif', 'RYU1_goBack.gif', 'RYU1_jumpUp.gif', 'RYU1_jump_down.gif', 'RYU1_impact_boxing.gif', 'RYU1_after_impact_boxing.gif', 'RYU1_before_whirl_kick.gif', 'RYU1_after_whirl_kick.gif', 'RYU1_whirl_kick.gif', 'RYU1_heavy_kick.gif', 'RYU1_jump_forward.gif', 'RYU1_crouch_heavy_kick.gif', 'RYU1_stand_up.gif', 'RYU1_crouch.gif', 'RYU1_jump_forward.gif', 'RYU1_jump_back.gif', 'RYU1_light_boxing.gif',
@@ -35,61 +37,72 @@ var Util = {
 		hitEffect: [ 'defense.gif', 'heavy.gif', 'light.gif' ],
 
 		magic: [ 'simpleFire.gif', 'transverseWave.gif', 'transverseWaveDisappear.gif' ]
-    },
-    //存储音频
-    audios: [ 'china.mp3', 'defense.mp3', 'fall.mp3', 'heavy_boxing.mp3', 'hit_heavy_boxing.mp3', 'hit_heavy_kick.mp3', 'hit_light.mp3', 'impact_boxing.mp3', 'light_boxing.mp3', 'wave_boxing.mp3', 'whirl_kick.mp3' ],
-    
-    imgObj: {},
 
-    //获取图片对象信息
-    getImage:function(name){
-        return this.imgObj[name];
-    },
-    loadImg:function(callback){
-          var root = 'images/',
-          count = 0,
-          num = 0;
-          for(var i in this.images){
-              count += this.images[i].length;
-          }
-          for(var j = 0,c;c=arr[j++];){
-              var src = root+root2+'/'+c;
-              var image = new Image;
-              image.onload = function(){
-                  var name  = this.src.split('/');
-                  name = name[name.length-1].split('.')[0];
-                  Util.imgObj[name] = {
-                      obj:this,
-                      width:this.width,
-                      height:this.height
-                  }
-                  num+=1;
-                  div2.innerHTML = num+'/'+count;
-                  if(count === num){
-                      callback && callback();
-                  }
-                  this.onload = null;
-              }
-              image.src = src;
-          }
-    },
-    //临时存储 
-    audioObj:{},
-    loadAudio:function(callback){
-         var root = 'sound/', //音频根路径
-             count = this.audios.length,//文件数量
-             num = 0;
-             for(var i=0,c;c=this.audios[i++];){
-                 div2.innerHTML = i+'/'+count;
-                 var audio = new Audio();
-                 audio.addEventListener("canplaythrough",function(){
-                     num+=1;
-                     Util.audioObj[c]= root+c;
-                     if(count === num){
-                         callback && callback();
-                     }
-                 },false);
-                 audio.src = root+c;
-             }
-    }
+	},
+
+	audios: [ 'china.mp3', 'defense.mp3', 'fall.mp3', 'heavy_boxing.mp3', 'hit_heavy_boxing.mp3', 'hit_heavy_kick.mp3', 'hit_light.mp3', 'impact_boxing.mp3', 'light_boxing.mp3', 'wave_boxing.mp3', 'whirl_kick.mp3' ],
+
+	imgObj: {},
+	
+	getImage: function( name ){
+		return this.imgObj[ name ];
+	},
+	
+	loadImg: function( callback ){
+
+		var root = 'images/', count = 0, num = 0;
+
+		for ( var i in this.images ){
+			count += this.images[i].length;
+		}
+
+		for ( var i in this.images ){
+			var root2 = i, ary = this.images[i];
+			for ( var j = 0, c; c = ary[j++]; ){
+				var src = root + root2 + '/' + c;
+				var image = new Image;
+				image.onload = function(){
+					var name = this.src.split( '/' );
+					name = name[ name.length - 1 ].split( '.' )[0];
+					Util.imgObj[ name ] = {
+						obj: this,
+						width: this.width,
+						height: this.height
+					}
+					num += 1;
+					div2.innerHTML = num + '/' + count;
+					if ( count === num ){
+						callback && callback();
+					}
+					this.onload = null;
+				}
+				image.src = src;
+			}
+		}
+	},
+	
+	audioObj: {},
+	
+	loadAudio: function( callback ){
+		var root = 'sound/', count = this.audios.length, num = 0;
+		for ( var i = 0, c; c = this.audios[ i++ ]; ){
+			div2.innerHTML = i + '/' + count;
+			var audio = new Audio();
+			audio.addEventListener( "canplaythrough", function () {
+				num += 1;
+				Util.audioObj[ c ] = root + c;
+				if ( count === num ){
+					callback && callback();
+				}
+			}, false);
+			audio.src = root + c;
+		}
+	}
+
+	
+	
 }
+
+
+
+
